@@ -21,13 +21,22 @@ const Usuario = require('../models/usuario')
 
   /* ============================= PUT ========================================= */
 
-  const usuarioPut = (req, res)=> {
+  const usuarioPut = async (req, res)=> {
 
-    const {id}=req.params
+    const {id}=req.params;
+    const {_id,password,google,email,...rest}=req.body;
+
+    if (password) {
+      const sal=bcrypt.genSaltSync();
+      rest.password=bcrypt.hashSync(password , sal);
+    }
+
+    const usuario=await Usuario.findByIdAndUpdate(id,rest)
+
 
     res.json({
-        id,
-        msg:'put api - controller'
+        msg:'put api - controller',
+        usuario
     });
   }
 
@@ -37,14 +46,6 @@ const Usuario = require('../models/usuario')
     
     const {nombre, correo, password,rol}=req.body;
     const usuario = new Usuario({nombre,correo,password,rol})
-
-    //Verificar si el correo existe
-     const existeEmail = await Usuario.findOne({correo});
-     if (existeEmail) {
-       return res.status(400).json({
-         msg:'Ese correo ya esta registrado'
-       });
-     }
 
 
     //ENCRIPTAR PASSWORD

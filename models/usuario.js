@@ -32,5 +32,14 @@ const UsuarioSchema = Schema({
     }
 });
 
+
+//Para eliminar campos del usuario para que no se muestren en la respuesta del la consulta
+
+UsuarioSchema.methods.toJSON= function(){
+//...usuario , es el resultado luego de quitar __v y password
+    const {__v, password , ...usuario} = this.toObject();
+    return usuario
+}
+
 //Exportamos como modelo con nombre Usuario
 module.exports= model('Usuario', UsuarioSchema);
